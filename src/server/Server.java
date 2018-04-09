@@ -22,10 +22,10 @@ public class Server {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Server listening on port 8080...");
+		System.out.println("Notification server ready!\n");
 		
 		while (true) {
-			System.out.print("Enter a message: ");
+			System.out.print("Write a notification for all the subscribers: ");
 			String msg = null;
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

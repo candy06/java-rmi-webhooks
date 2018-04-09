@@ -20,13 +20,22 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	}
 
 	@Override
-	public void subscribe(INotificationClient clientProxy) throws RemoteException {
+	public void subscribe(String name, INotificationClient clientProxy) throws RemoteException {
 		if (Objects.isNull(clientProxy)) return;
 		clientProxyList.add(clientProxy);
+		System.out.println("\nNew subscriber: " + name + ".");
+	}
+	
+	@Override
+	public void unsubscribe(String name, INotificationClient clientProxy) throws RemoteException {
+		if (Objects.isNull(clientProxy) || !clientProxyList.contains(clientProxy)) return;
+		clientProxyList.remove(clientProxy);
+		System.out.println("\n" + name + " is not a subscriber anymore.");
 	}
 
 	@Override
 	public void broadcastToAll(String message) throws RemoteException {
+		if (clientProxyList.isEmpty()) return;
 		for (INotificationClient clientProxy : clientProxyList) {
 			clientProxy.display(message);
 		}
