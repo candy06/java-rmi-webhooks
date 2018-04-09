@@ -21,6 +21,7 @@ public class Server {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		
 		System.out.println("Server listening on port 8080...");
 		
 		while (true) {
@@ -32,6 +33,7 @@ public class Server {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			server.broadcastToAll(msg);
 		}
 		

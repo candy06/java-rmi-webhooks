@@ -1,24 +1,20 @@
 package client;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 public class Client {
 	
 	private static final String SERVER_URL = "rmi://localhost:8080/notification_server";
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
 		
-		String clientName = args[0];
+		String name = args[0];
 		int port = Integer.parseInt(args[1]);
 		
-		try {
-			Registry registry = LocateRegistry.createRegistry(port);
-			registry.rebind(clientName, new NotificationClient(clientName, port, SERVER_URL));
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		new NotificationClient(name, port, SERVER_URL);
+		
 	}
 
 }

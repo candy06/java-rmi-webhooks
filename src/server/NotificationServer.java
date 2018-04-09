@@ -1,12 +1,10 @@
 package server;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import client.INotificationClient;
 
@@ -14,28 +12,23 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 
 	
 	private static final long serialVersionUID = 1L;
-	private List<String> clientURLList;
+	private List<INotificationClient> clientProxyList;
 
 	public NotificationServer() throws RemoteException {
 		super();
-		this.clientURLList = new ArrayList<>();
+		this.clientProxyList = new ArrayList<>();
 	}
 
 	@Override
-	public void subscribe(int port, String name) throws RemoteException {
-		clientURLList.add(URLBuilder.buildURL(port, name));
+	public void subscribe(INotificationClient clientProxy) throws RemoteException {
+		if (Objects.isNull(clientProxy)) return;
+		clientProxyList.add(clientProxy);
 	}
 
 	@Override
 	public void broadcastToAll(String message) throws RemoteException {
-		INotificationClient client;
-		for (String url : clientURLList) {
-			try {
-				client = (INotificationClient) Naming.lookup(url);
-				client.display(message);
-			} catch (MalformedURLException | NotBoundException e) {
-				e.printStackTrace();
-			}
+		for (INotificationClient clientProxy : clientProxyList) {
+			clientProxy.display(message);
 		}
 	}
 
