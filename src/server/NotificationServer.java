@@ -7,16 +7,19 @@ import java.util.List;
 import java.util.Objects;
 
 import client.INotificationClient;
+import common.Article;
 
 public class NotificationServer extends UnicastRemoteObject implements INotificationServer {
 
 	
 	private static final long serialVersionUID = 1L;
 	private List<INotificationClient> clientProxyList;
+	private List<Article> articleList;
 
 	public NotificationServer() throws RemoteException {
 		super();
 		this.clientProxyList = new ArrayList<>();
+		this.articleList = new ArrayList<>();
 	}
 
 	@Override
@@ -39,6 +42,15 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 		for (INotificationClient clientProxy : clientProxyList) {
 			clientProxy.display(message);
 		}
+	}
+
+	@Override
+	public void postArticle(Article article) throws RemoteException {
+		if (Objects.isNull(article)) return;
+		articleList.add(article);
+		System.out.println("\nNew article posted by: " + article.getAuthor() + "!\n");
+		broadcastToAll("\nA new article has been posted by " + article.getAuthor() + "."
+				+ "\nThe article name is '" + article.getTitle() + "'.\n");
 	}
 
 }

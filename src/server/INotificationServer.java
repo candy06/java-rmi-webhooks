@@ -4,12 +4,15 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import client.INotificationClient;
+import common.Article;
 
 public interface INotificationServer extends Remote {
 	
 	public void subscribe(String name, INotificationClient clientProxy) throws RemoteException;
 	
 	public void unsubscribe(String name, INotificationClient clientProxy) throws RemoteException;
+	
+	public void postArticle(Article article) throws RemoteException;
 	
 	public void broadcastToAll(String message) throws RemoteException;
 

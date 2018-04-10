@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import common.Article;
 import server.INotificationServer;
 
 public class NotificationClient extends UnicastRemoteObject implements INotificationClient, Runnable {
@@ -19,6 +20,7 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 	private final String name;
 	private final INotificationServer serverProxy;
 	private final INotificationClient clientProxy;
+	private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 	public NotificationClient(String name, int port, String serverURL)
 			throws RemoteException, MalformedURLException, NotBoundException {
@@ -39,8 +41,6 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 	public void run() {
 
 		System.out.println("Welcome " + name + "!");
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		while (true) {
 			
@@ -66,6 +66,14 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 				case "unsubscribe":
 					unsubscribe();
 					break;
+					
+				case "post_article":
+					try {
+						postArticle();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					break;
 	
 				default:
 					System.out.println("\nUnknown action: " + action + ".\n");
@@ -76,10 +84,21 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 
 	}
 	
+	private void postArticle() throws IOException {
+		String title = null;
+		String content = null;
+		System.out.print("Title: ");
+		title = br.readLine();
+		System.out.print("Content: ");
+		content = br.readLine();
+		serverProxy.postArticle(new Article(title, name, content));
+	}
+	
 	private void help() {
 		System.out.println("\n" + "Here is the list of action you can do:\n" + "- 'quit' to quit,\n"
 				+ "- 'subscribe' to subscribe to the notification server,\n"
-				+ "- 'unsubscribe' to unsubscribe to the notification server.\n");
+				+ "- 'unsubscribe' to unsubscribe to the notification server,\n"
+				+ "- 'post_article' to post a new article.\n");
 	}
 
 	private void subscribe() {
