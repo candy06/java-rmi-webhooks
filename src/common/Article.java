@@ -28,4 +28,12 @@ public class Article implements Serializable {
 		return content;
 	}
 
+	@Override
+	public String toString() {
+		return title + ", by " + author + "\n"
+				+ "\n" + content + "\n";
+	}
+	
+	
+
 }

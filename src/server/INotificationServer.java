@@ -12,7 +12,9 @@ public interface INotificationServer extends Remote {
 	
 	public void unsubscribe(String name, INotificationClient clientProxy) throws RemoteException;
 	
-	public void postArticle(Article article) throws RemoteException;
+	public void postArticle(INotificationClient client, Article article) throws RemoteException;
+	
+	public Article getArticle(INotificationClient client, String title) throws RemoteException;
 	
 	public void broadcastToAll(String message) throws RemoteException;
 

@@ -26,14 +26,14 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	public void subscribe(String name, INotificationClient clientProxy) throws RemoteException {
 		if (Objects.isNull(clientProxy)) return;
 		clientProxyList.add(clientProxy);
-		System.out.println("\nNew subscriber: " + name + ".");
+		System.out.println(">>> New subscriber: " + name + ".");
 	}
 	
 	@Override
 	public void unsubscribe(String name, INotificationClient clientProxy) throws RemoteException {
 		if (Objects.isNull(clientProxy) || !clientProxyList.contains(clientProxy)) return;
 		clientProxyList.remove(clientProxy);
-		System.out.println("\n" + name + " is not a subscriber anymore.");
+		System.out.println(">>> " + name + " is not a subscriber anymore.");
 	}
 
 	@Override
@@ -45,12 +45,24 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	}
 
 	@Override
-	public void postArticle(Article article) throws RemoteException {
+	public void postArticle(INotificationClient client, Article article) throws RemoteException {
 		if (Objects.isNull(article)) return;
+		if (!clientProxyList.contains(client)) return;
 		articleList.add(article);
-		System.out.println("\nNew article posted by: " + article.getAuthor() + "!\n");
+		System.out.println(">>> New article posted by: " + article.getAuthor() + "!\n");
 		broadcastToAll("\nA new article has been posted by " + article.getAuthor() + "."
 				+ "\nThe article name is '" + article.getTitle() + "'.\n");
+	}
+
+	@Override
+	public Article getArticle(INotificationClient client, String title) throws RemoteException {
+		if (articleList.isEmpty() || Objects.isNull(title)) return null;
+		if (!clientProxyList.contains(client)) return null;
+		for (Article article : articleList) {
+			if (article.getTitle().equals(title))
+				return article;
+		}
+		return null;
 	}
 
 }

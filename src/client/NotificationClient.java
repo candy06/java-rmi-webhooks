@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Objects;
 
 import common.Article;
 import server.INotificationServer;
@@ -74,6 +75,14 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 						e.printStackTrace();
 					}
 					break;
+					
+				case "get_article":
+					try {
+						getArticle();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					break;
 	
 				default:
 					System.out.println("\nUnknown action: " + action + ".\n");
@@ -84,6 +93,17 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 
 	}
 	
+	private void getArticle() throws IOException {
+		String title = null;
+		System.out.print("Title of the article: ");
+		title = br.readLine();
+		Article foundedArticle = serverProxy.getArticle(this, title);
+		if (Objects.isNull(foundedArticle))
+			System.out.println("\nError: article not found or you are not a subscriber.\n");
+		else 
+			System.out.println("\n" + foundedArticle + "\n");
+	}
+	
 	private void postArticle() throws IOException {
 		String title = null;
 		String content = null;
@@ -91,14 +111,15 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 		title = br.readLine();
 		System.out.print("Content: ");
 		content = br.readLine();
-		serverProxy.postArticle(new Article(title, name, content));
+		serverProxy.postArticle(this, new Article(title, name, content));
 	}
 	
 	private void help() {
 		System.out.println("\n" + "Here is the list of action you can do:\n" + "- 'quit' to quit,\n"
 				+ "- 'subscribe' to subscribe to the notification server,\n"
 				+ "- 'unsubscribe' to unsubscribe to the notification server,\n"
-				+ "- 'post_article' to post a new article.\n");
+				+ "- 'post_article' to post a new article,"
+				+ "- 'get_article' to get an article.\n");
 	}
 
 	private void subscribe() {
