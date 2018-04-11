@@ -97,7 +97,7 @@ public class ClientGUI {
 		
 		frmClientApplication = new JFrame();
 		frmClientApplication.setTitle("Client application ");
-		frmClientApplication.setBounds(100, 100, 742, 386);
+		frmClientApplication.setBounds(100, 100, 758, 386);
 		frmClientApplication.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmClientApplication.addWindowListener(new WindowAdapter()
 		{
@@ -131,7 +131,9 @@ public class ClientGUI {
 				String articleContent = articleContentTextField.getText();
 				if (Objects.isNull(articleTitle) || Objects.isNull(articleContent) || articleTitle.trim().equals("") || articleContent.trim().equals("")) return;
 				try {
-					client.getServerProxy().postArticle(client, new Article(articleTitle, client.getName(), articleContent));
+					int requestCode = client.getServerProxy().postArticle(client, new Article(articleTitle, client.getName(), articleContent));
+					if (requestCode == -1)
+						textArea.setText("An article with the same title already exist...");
 				} catch (RemoteException e1) {
 					e1.printStackTrace();
 				}
@@ -140,6 +142,7 @@ public class ClientGUI {
 				postButton.setEnabled(false);
 				getArticleButton.setEnabled(true);
 				postArticleButton.setEnabled(true);
+				unsubscribeButton.setEnabled(true);
 				clearTextFields();
 			}
 		});
@@ -168,6 +171,7 @@ public class ClientGUI {
 				getButton.setEnabled(false);
 				getArticleButton.setEnabled(true);
 				postArticleButton.setEnabled(true);
+				unsubscribeButton.setEnabled(true);
 				clearTextFields();
 			}
 		});
@@ -219,21 +223,23 @@ public class ClientGUI {
 		panel_1.setLayout(gl_panel_1);
 		
 		panel_2 = new JPanel();
-		panel_2.setBackground(SystemColor.controlDkShadow);
+		panel_2.setBackground(new Color(0, 51, 51));
 		frmClientApplication.getContentPane().add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(null);
 		
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
-		textArea.setForeground(Color.ORANGE);
-		textArea.setBackground(Color.DARK_GRAY);
+		textArea.setForeground(SystemColor.infoText);
+		textArea.setBackground(SystemColor.inactiveCaptionBorder);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
-		textArea.setBounds(10, 0, 477, 281);
+		textArea.setBounds(10, 11, 493, 270);
 		panel_2.add(textArea);
 		
 		subscribeButton = new JButton("Subscribe");
+		subscribeButton.setForeground(new Color(230, 230, 250));
+		subscribeButton.setBackground(new Color(0, 128, 128));
 		subscribeButton.setBounds(21, 292, 109, 44);
 		panel_2.add(subscribeButton);
 		subscribeButton.addActionListener(new ActionListener() {
@@ -249,9 +255,11 @@ public class ClientGUI {
 				subscribeButton.setEnabled(false);
 			}
 		});
-		subscribeButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 12));
+		subscribeButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		
 		unsubscribeButton = new JButton("Unsubscribe");
+		unsubscribeButton.setForeground(new Color(230, 230, 250));
+		unsubscribeButton.setBackground(new Color(0, 128, 128));
 		unsubscribeButton.setBounds(140, 292, 109, 44);
 		panel_2.add(unsubscribeButton);
 		unsubscribeButton.addActionListener(new ActionListener() {
@@ -261,16 +269,19 @@ public class ClientGUI {
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
+				textArea.setText("Goodbye!");
 				subscribeButton.setEnabled(true);
 				unsubscribeButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
 			}
 		});
-		unsubscribeButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 12));
+		unsubscribeButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		unsubscribeButton.setEnabled(false);
 		
 		postArticleButton = new JButton("Post article");
+		postArticleButton.setForeground(new Color(230, 230, 250));
+		postArticleButton.setBackground(new Color(0, 128, 128));
 		postArticleButton.setBounds(258, 292, 110, 44);
 		panel_2.add(postArticleButton);
 		postArticleButton.addActionListener(new ActionListener() {
@@ -281,15 +292,18 @@ public class ClientGUI {
 				getButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
+				unsubscribeButton.setEnabled(false);
 			}
 		});
 		postArticleButton.setEnabled(false);
-		postArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 12));
+		postArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		
 		getArticleButton = new JButton("Get article");
+		getArticleButton.setForeground(new Color(230, 230, 250));
+		getArticleButton.setBackground(new Color(0, 128, 128));
 		getArticleButton.setBounds(377, 292, 110, 44);
 		panel_2.add(getArticleButton);
-		getArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 12));
+		getArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		getArticleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				articleTitleTextField.setEditable(true);
@@ -298,6 +312,7 @@ public class ClientGUI {
 				getButton.setEnabled(true);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
+				unsubscribeButton.setEnabled(false);
 			}
 		});
 		getArticleButton.setEnabled(false);

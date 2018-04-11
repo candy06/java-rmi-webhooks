@@ -52,12 +52,25 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	}
 
 	@Override
-	public void postArticle(INotificationClient client, Article article) throws RemoteException {
-		if (Objects.isNull(article)) return;
-		if (!clientProxyList.contains(client)) return;
-		articleList.add(article);
-		broadcastToAll("\nA new article has been posted by " + article.getAuthor() + "."
-				+ "\nThe article name is '" + article.getTitle() + "'.\n");
+	public int postArticle(INotificationClient client, Article article) throws RemoteException {
+		if (Objects.isNull(article)) return -2;
+		if (!clientProxyList.contains(client)) return -3;
+		if (isAlreadyStored(article)) {
+			return -1;
+		} else {
+			articleList.add(article);
+			broadcastToAll("\nA new article has been posted by " + article.getAuthor() + "."
+					+ "\nThe article name is '" + article.getTitle() + "'.\n");
+			return 0;
+		}
+	}
+	
+	private boolean isAlreadyStored(Article article) {
+		for (Article a : articleList) {
+			if (a.getTitle().equals(article.getTitle()))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
