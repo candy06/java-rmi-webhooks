@@ -13,7 +13,7 @@ public class Client {
 		String name = args[0];
 		int port = Integer.parseInt(args[1]);
 		
-		new Thread(new NotificationClient(name, port, SERVER_URL)).start();
+		new Thread(new NotificationClient(name, port, SERVER_URL, null)).start();
 		
 		
 		

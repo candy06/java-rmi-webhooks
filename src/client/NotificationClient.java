@@ -10,8 +10,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Timestamp;
 import java.util.Objects;
 
+import app.ClientGUI;
 import common.Article;
 import server.INotificationServer;
 
@@ -22,11 +24,13 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 	private final INotificationServer serverProxy;
 	private final INotificationClient clientProxy;
 	private final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	private final ClientGUI gui;
 
-	public NotificationClient(String name, int port, String serverURL)
+	public NotificationClient(String name, int port, String serverURL, ClientGUI gui)
 			throws RemoteException, MalformedURLException, NotBoundException {
 		super();
 		this.name = name;
+		this.gui = gui;
 		Registry registry = LocateRegistry.createRegistry(port);
 		registry.rebind(name, this);
 		this.serverProxy = (INotificationServer) Naming.lookup(serverURL);
@@ -35,7 +39,23 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 
 	@Override
 	public void display(String message) throws RemoteException {
-		System.out.println("\nNotification from server: " + message);
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		if (Objects.isNull(gui)) 
+			System.out.println("\nNotification from server: " + message);
+		else 
+			gui.getTextArea().setText("[server][" + timestamp + "]\n" + message);
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public INotificationServer getServerProxy() {
+		return serverProxy;
+	}
+	
+	public INotificationClient getClientProxy() {
+		return clientProxy;
 	}
 
 	@Override
