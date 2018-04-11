@@ -34,7 +34,7 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	public void subscribe(String name, INotificationClient clientProxy) throws RemoteException {
 		if (Objects.isNull(clientProxy)) return;
 		clientProxyList.add(clientProxy);
-		broadcastToAll("\n There is a new subscriber. Please welcome " + name + "!\n");
+		broadcastToAll("There is a new subscriber. Please welcome " + name + "!\n");
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	public void broadcastToAll(String message) throws RemoteException {
 		if (clientProxyList.isEmpty()) return;
 		for (INotificationClient clientProxy : clientProxyList) {
-			clientProxy.display(message);
+			clientProxy.display("\n" + message);
 		}
 	}
 
@@ -59,7 +59,7 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 			return -1;
 		} else {
 			articleList.add(article);
-			broadcastToAll("\nA new article has been posted by " + article.getAuthor() + "."
+			broadcastToAll("A new article has been posted by " + article.getAuthor() + "."
 					+ "\nThe article name is '" + article.getTitle() + "'.\n");
 			return 0;
 		}

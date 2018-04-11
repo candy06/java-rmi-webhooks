@@ -124,7 +124,7 @@ public class ClientGUI {
 		lblNewLabel_1 = new JLabel("Content:");
 		lblNewLabel_1.setFont(new Font("Courier New", Font.PLAIN, 14));
 		
-		postButton = new JButton("Post");
+		postButton = new JButton("Create");
 		postButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String articleTitle = articleTitleTextField.getText();
@@ -152,7 +152,7 @@ public class ClientGUI {
 		articleContentTextField.setEditable(false);
 		articleContentTextField.setColumns(10);
 		
-		getButton = new JButton("Get");
+		getButton = new JButton("Read");
 		getButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String articleTitle = articleTitleTextField.getText();
@@ -240,7 +240,7 @@ public class ClientGUI {
 		subscribeButton = new JButton("Subscribe");
 		subscribeButton.setForeground(new Color(230, 230, 250));
 		subscribeButton.setBackground(new Color(0, 128, 128));
-		subscribeButton.setBounds(21, 292, 109, 44);
+		subscribeButton.setBounds(10, 292, 113, 44);
 		panel_2.add(subscribeButton);
 		subscribeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -260,7 +260,7 @@ public class ClientGUI {
 		unsubscribeButton = new JButton("Unsubscribe");
 		unsubscribeButton.setForeground(new Color(230, 230, 250));
 		unsubscribeButton.setBackground(new Color(0, 128, 128));
-		unsubscribeButton.setBounds(140, 292, 109, 44);
+		unsubscribeButton.setBounds(133, 292, 120, 44);
 		panel_2.add(unsubscribeButton);
 		unsubscribeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -279,10 +279,10 @@ public class ClientGUI {
 		unsubscribeButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		unsubscribeButton.setEnabled(false);
 		
-		postArticleButton = new JButton("Post article");
+		postArticleButton = new JButton("Create article");
 		postArticleButton.setForeground(new Color(230, 230, 250));
 		postArticleButton.setBackground(new Color(0, 128, 128));
-		postArticleButton.setBounds(258, 292, 110, 44);
+		postArticleButton.setBounds(263, 292, 120, 44);
 		panel_2.add(postArticleButton);
 		postArticleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -298,10 +298,10 @@ public class ClientGUI {
 		postArticleButton.setEnabled(false);
 		postArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		
-		getArticleButton = new JButton("Get article");
+		getArticleButton = new JButton("Read article");
 		getArticleButton.setForeground(new Color(230, 230, 250));
 		getArticleButton.setBackground(new Color(0, 128, 128));
-		getArticleButton.setBounds(377, 292, 110, 44);
+		getArticleButton.setBounds(393, 292, 110, 44);
 		panel_2.add(getArticleButton);
 		getArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		getArticleButton.addActionListener(new ActionListener() {
