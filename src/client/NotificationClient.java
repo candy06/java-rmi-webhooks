@@ -42,8 +42,10 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 		if (Objects.isNull(gui)) 
 			System.out.println("\nNotification from server: " + message);
-		else 
+		else {
 			gui.getTextArea().setText("[server][" + timestamp + "]\n" + message);
+		}
+			
 	}
 	
 	public String getName() {
@@ -135,10 +137,10 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 	}
 	
 	private void help() {
-		System.out.println("\n" + "Here is the list of action you can do:\n" + "- 'quit' to quit,\n"
+		System.out.println("\n" + "Here is the list of action you can do:\n"
 				+ "- 'subscribe' to subscribe to the notification server,\n"
 				+ "- 'unsubscribe' to unsubscribe to the notification server,\n"
-				+ "- 'post_article' to post a new article,"
+				+ "- 'post_article' to post a new article,\n"
 				+ "- 'get_article' to get an article.\n");
 	}
 
@@ -148,8 +150,6 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		System.out.println(
-				"\nYou are now a subscriber of the notification server and you will receive every notification from the server.\n");
 	}
 
 	private void unsubscribe() {

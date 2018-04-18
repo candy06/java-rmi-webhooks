@@ -26,7 +26,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextArea;
 import java.awt.Color;
-import java.awt.SystemColor;
 
 public class ClientGUI {
 
@@ -40,6 +39,7 @@ public class ClientGUI {
 	private JButton subscribeButton;
 	private JButton postArticleButton;
 	private JButton postButton;
+	private JButton cancelButton;
 	
 	/* text fields */
 	private JTextField articleTitleTextField;
@@ -126,24 +126,33 @@ public class ClientGUI {
 		
 		postButton = new JButton("Create");
 		postButton.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent e) {
+				
 				String articleTitle = articleTitleTextField.getText();
 				String articleContent = articleContentTextField.getText();
-				if (Objects.isNull(articleTitle) || Objects.isNull(articleContent) || articleTitle.trim().equals("") || articleContent.trim().equals("")) return;
-				try {
-					int requestCode = client.getServerProxy().postArticle(client, new Article(articleTitle, client.getName(), articleContent));
-					if (requestCode == -1)
-						textArea.setText("An article with the same title already exist...");
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
+				boolean titleError = (Objects.isNull(articleTitle) || articleTitle.trim().equals(""));
+				boolean contentError = (Objects.isNull(articleContent) || articleContent.trim().equals(""));
+				if (titleError || contentError) {
+					textArea.setText("Error: no title or content typed for the article.");
+					return;
+				} else {
+					try {
+						int requestCode = client.getServerProxy().postArticle(client, new Article(articleTitle, client.getName(), articleContent));
+						if (requestCode == -1)
+							textArea.setText("Oops: an article with the same title already exist.");
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+					articleTitleTextField.setEditable(false);
+					articleContentTextField.setEditable(false);
+					postButton.setEnabled(false);
+					cancelButton.setEnabled(false);
+					getArticleButton.setEnabled(true);
+					postArticleButton.setEnabled(true);
+					unsubscribeButton.setEnabled(true);
+					clearTextFields();
 				}
-				articleTitleTextField.setEditable(false);
-				articleContentTextField.setEditable(false);
-				postButton.setEnabled(false);
-				getArticleButton.setEnabled(true);
-				postArticleButton.setEnabled(true);
-				unsubscribeButton.setEnabled(true);
-				clearTextFields();
 			}
 		});
 		postButton.setEnabled(false);
@@ -156,52 +165,67 @@ public class ClientGUI {
 		getButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String articleTitle = articleTitleTextField.getText();
-				if (Objects.isNull(articleTitle) || articleTitle.trim().equals("")) return;
-				Article foundArticle = null;
-				try {
-					foundArticle = client.getServerProxy().getArticle(client, articleTitle);
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
+				if (Objects.isNull(articleTitle) || articleTitle.trim().equals("")) textArea.setText("Error: no title typed.");
+				else {
+					Article foundArticle = null;
+					try {
+						foundArticle = client.getServerProxy().getArticle(client, articleTitle);
+					} catch (RemoteException e1) {
+						e1.printStackTrace();
+					}
+					if (Objects.isNull(foundArticle))
+						textArea.setText("Article not found!");
+					else 
+						textArea.setText(foundArticle.toString());
+					articleTitleTextField.setEditable(false);
+					getButton.setEnabled(false);
+					cancelButton.setEnabled(false);
+					getArticleButton.setEnabled(true);
+					postArticleButton.setEnabled(true);
+					unsubscribeButton.setEnabled(true);
+					clearTextFields();
 				}
-				if (Objects.isNull(foundArticle))
-					textArea.setText("Article not found!");
-				else 
-					textArea.setText(foundArticle.toString());
-				articleTitleTextField.setEditable(false);
-				getButton.setEnabled(false);
-				getArticleButton.setEnabled(true);
-				postArticleButton.setEnabled(true);
-				unsubscribeButton.setEnabled(true);
-				clearTextFields();
 			}
 		});
 		getButton.setEnabled(false);
+		
+		cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				unsubscribeButton.setEnabled(true);
+				postArticleButton.setEnabled(true);
+				getArticleButton.setEnabled(true);
+				postButton.setEnabled(false);
+				getButton.setEnabled(false);
+				cancelButton.setEnabled(false);
+				articleTitleTextField.setEditable(false);
+				articleContentTextField.setEditable(false);
+			}
+		});
+		cancelButton.setEnabled(false);
+		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
+			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewLabel)
+						.addComponent(lblNewLabel_1)
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel_1.createSequentialGroup()
-									.addGap(10)
-									.addComponent(articleTitleTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
-								.addComponent(lblNewLabel)))
+							.addGap(10)
+							.addComponent(articleTitleTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
 						.addGroup(gl_panel_1.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_panel_1.createSequentialGroup()
-									.addGap(10)
-									.addComponent(articleContentTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
-								.addComponent(lblNewLabel_1)))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(83)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(getButton, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-								.addComponent(postButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addGap(36)))
+							.addGap(10)
+							.addComponent(articleContentTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)))
 					.addContainerGap())
+				.addGroup(gl_panel_1.createSequentialGroup()
+					.addGap(73)
+					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+						.addComponent(cancelButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+						.addComponent(getButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
+						.addComponent(postButton, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
+					.addGap(75))
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -218,7 +242,9 @@ public class ClientGUI {
 					.addComponent(postButton)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(getButton)
-					.addContainerGap(18, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(cancelButton)
+					.addContainerGap(62, Short.MAX_VALUE))
 		);
 		panel_1.setLayout(gl_panel_1);
 		
@@ -228,9 +254,11 @@ public class ClientGUI {
 		panel_2.setLayout(null);
 		
 		textArea = new JTextArea();
-		textArea.setFont(new Font("Monospaced", Font.PLAIN, 15));
-		textArea.setForeground(SystemColor.infoText);
-		textArea.setBackground(SystemColor.inactiveCaptionBorder);
+		textArea.setRows(2);
+		textArea.setToolTipText("");
+		textArea.setFont(new Font("DialogInput", Font.BOLD, 15));
+		textArea.setForeground(Color.ORANGE);
+		textArea.setBackground(Color.DARK_GRAY);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 		textArea.setEditable(false);
@@ -239,7 +267,7 @@ public class ClientGUI {
 		
 		subscribeButton = new JButton("Subscribe");
 		subscribeButton.setForeground(new Color(230, 230, 250));
-		subscribeButton.setBackground(new Color(0, 128, 128));
+		subscribeButton.setBackground(new Color(0, 0, 128));
 		subscribeButton.setBounds(10, 292, 113, 44);
 		panel_2.add(subscribeButton);
 		subscribeButton.addActionListener(new ActionListener() {
@@ -259,7 +287,7 @@ public class ClientGUI {
 		
 		unsubscribeButton = new JButton("Unsubscribe");
 		unsubscribeButton.setForeground(new Color(230, 230, 250));
-		unsubscribeButton.setBackground(new Color(0, 128, 128));
+		unsubscribeButton.setBackground(new Color(128, 0, 0));
 		unsubscribeButton.setBounds(133, 292, 120, 44);
 		panel_2.add(unsubscribeButton);
 		unsubscribeButton.addActionListener(new ActionListener() {
@@ -269,7 +297,7 @@ public class ClientGUI {
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-				textArea.setText("Goodbye!");
+				textArea.setText("Goodbye, see you soon!");
 				subscribeButton.setEnabled(true);
 				unsubscribeButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
@@ -281,7 +309,7 @@ public class ClientGUI {
 		
 		postArticleButton = new JButton("Create article");
 		postArticleButton.setForeground(new Color(230, 230, 250));
-		postArticleButton.setBackground(new Color(0, 128, 128));
+		postArticleButton.setBackground(new Color(0, 128, 0));
 		postArticleButton.setBounds(263, 292, 120, 44);
 		panel_2.add(postArticleButton);
 		postArticleButton.addActionListener(new ActionListener() {
@@ -289,6 +317,7 @@ public class ClientGUI {
 				articleTitleTextField.setEditable(true);
 				articleContentTextField.setEditable(true);
 				postButton.setEnabled(true);
+				cancelButton.setEnabled(true);
 				getButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
@@ -300,16 +329,17 @@ public class ClientGUI {
 		
 		getArticleButton = new JButton("Read article");
 		getArticleButton.setForeground(new Color(230, 230, 250));
-		getArticleButton.setBackground(new Color(0, 128, 128));
+		getArticleButton.setBackground(new Color(0, 128, 0));
 		getArticleButton.setBounds(393, 292, 110, 44);
 		panel_2.add(getArticleButton);
 		getArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		getArticleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				articleTitleTextField.setEditable(true);
+				getButton.setEnabled(true);
+				cancelButton.setEnabled(true);
 				articleContentTextField.setEditable(false);
 				postButton.setEnabled(false);
-				getButton.setEnabled(true);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
 				unsubscribeButton.setEnabled(false);

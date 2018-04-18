@@ -31,7 +31,7 @@ public class Article implements Serializable {
 	@Override
 	public String toString() {
 		return title + ", by " + author + "\n"
-				+ "\n" + content + "\n";
+				+ "\n   " + content + "\n";
 	}
 	
 	

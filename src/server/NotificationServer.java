@@ -47,7 +47,7 @@ public class NotificationServer extends UnicastRemoteObject implements INotifica
 	public void broadcastToAll(String message) throws RemoteException {
 		if (clientProxyList.isEmpty()) return;
 		for (INotificationClient clientProxy : clientProxyList) {
-			clientProxy.display("\n" + message);
+			clientProxy.display(message);
 		}
 	}
 
