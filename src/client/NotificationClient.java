@@ -43,7 +43,7 @@ public class NotificationClient extends UnicastRemoteObject implements INotifica
 		if (Objects.isNull(gui)) 
 			System.out.println("\nNotification from server: " + message);
 		else {
-			gui.getTextArea().setText("[server][" + timestamp + "]\n" + message);
+			gui.getTextArea().setText(gui.getTextArea().getText() + "[server][" + timestamp + "]\n" + message + "\n");
 		}
 			
 	}

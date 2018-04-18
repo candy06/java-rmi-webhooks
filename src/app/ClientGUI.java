@@ -4,8 +4,11 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.TextArea;
 
 import client.NotificationClient;
 import common.Article;
@@ -26,6 +29,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextArea;
 import java.awt.Color;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 public class ClientGUI {
 
@@ -43,13 +48,15 @@ public class ClientGUI {
 	
 	/* text fields */
 	private JTextField articleTitleTextField;
-	private JTextField articleContentTextField;
 	
 	private NotificationClient client;
 	private JPanel panel_2;
 	private JTextArea textArea;
+	private JTextArea articleTextArea;
 	private JButton getButton;
 	private JButton getArticleButton;
+	private JScrollPane scrollPane_2;
+	private JTextArea contentTextArea;
 	
 
 	/**
@@ -87,7 +94,7 @@ public class ClientGUI {
 	
 	private void clearTextFields() {
 		articleTitleTextField.setText("");
-		articleContentTextField.setText("");
+		contentTextArea.setText("");
 	}
 
 	/**
@@ -96,8 +103,9 @@ public class ClientGUI {
 	private void initialize() {
 		
 		frmClientApplication = new JFrame();
+		frmClientApplication.setResizable(false);
 		frmClientApplication.setTitle("Client application ");
-		frmClientApplication.setBounds(100, 100, 758, 386);
+		frmClientApplication.setBounds(100, 100, 1083, 490);
 		frmClientApplication.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmClientApplication.addWindowListener(new WindowAdapter()
 		{
@@ -130,42 +138,50 @@ public class ClientGUI {
 			public void actionPerformed(ActionEvent e) {
 				
 				String articleTitle = articleTitleTextField.getText();
-				String articleContent = articleContentTextField.getText();
+				String articleContent = contentTextArea.getText();
 				boolean titleError = (Objects.isNull(articleTitle) || articleTitle.trim().equals(""));
 				boolean contentError = (Objects.isNull(articleContent) || articleContent.trim().equals(""));
-				if (titleError || contentError) {
-					textArea.setText("Error: no title or content typed for the article.");
-					return;
-				} else {
+				if (titleError || contentError) 
+					JOptionPane.showMessageDialog(frmClientApplication,
+						    "No title or content entered!",
+						    "Oops...",
+						    JOptionPane.ERROR_MESSAGE);
+				else {
 					try {
 						int requestCode = client.getServerProxy().postArticle(client, new Article(articleTitle, client.getName(), articleContent));
-						if (requestCode == -1)
-							textArea.setText("Oops: an article with the same title already exist.");
+						if (requestCode == -1) {
+							JOptionPane.showMessageDialog(frmClientApplication,
+								    "An article with the same title already exists!",
+								    "Oops...",
+								    JOptionPane.ERROR_MESSAGE);
+						} else {
+							articleTitleTextField.setEditable(false);
+							contentTextArea.setEditable(false);
+							postButton.setEnabled(false);
+							cancelButton.setEnabled(false);
+							getArticleButton.setEnabled(true);
+							postArticleButton.setEnabled(true);
+							unsubscribeButton.setEnabled(true);
+							clearTextFields();
+						}
 					} catch (RemoteException e1) {
 						e1.printStackTrace();
 					}
-					articleTitleTextField.setEditable(false);
-					articleContentTextField.setEditable(false);
-					postButton.setEnabled(false);
-					cancelButton.setEnabled(false);
-					getArticleButton.setEnabled(true);
-					postArticleButton.setEnabled(true);
-					unsubscribeButton.setEnabled(true);
-					clearTextFields();
 				}
 			}
 		});
 		postButton.setEnabled(false);
 		
-		articleContentTextField = new JTextField();
-		articleContentTextField.setEditable(false);
-		articleContentTextField.setColumns(10);
-		
 		getButton = new JButton("Read");
 		getButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String articleTitle = articleTitleTextField.getText();
-				if (Objects.isNull(articleTitle) || articleTitle.trim().equals("")) textArea.setText("Error: no title typed.");
+				if (Objects.isNull(articleTitle) || articleTitle.trim().equals("")) 
+					JOptionPane.showMessageDialog(frmClientApplication,
+						    "No title entered!",
+						    "Oops...",
+						    JOptionPane.ERROR_MESSAGE);
+				
 				else {
 					Article foundArticle = null;
 					try {
@@ -174,9 +190,9 @@ public class ClientGUI {
 						e1.printStackTrace();
 					}
 					if (Objects.isNull(foundArticle))
-						textArea.setText("Article not found!");
+						articleTextArea.setText("Article not found!");
 					else 
-						textArea.setText(foundArticle.toString());
+						articleTextArea.setText(foundArticle.toString());
 					articleTitleTextField.setEditable(false);
 					getButton.setEnabled(false);
 					cancelButton.setEnabled(false);
@@ -195,37 +211,46 @@ public class ClientGUI {
 				unsubscribeButton.setEnabled(true);
 				postArticleButton.setEnabled(true);
 				getArticleButton.setEnabled(true);
+				contentTextArea.setEnabled(false);
 				postButton.setEnabled(false);
 				getButton.setEnabled(false);
 				cancelButton.setEnabled(false);
 				articleTitleTextField.setEditable(false);
-				articleContentTextField.setEditable(false);
 			}
 		});
 		cancelButton.setEnabled(false);
 		
+		scrollPane_2 = new JScrollPane();
+		
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel_1.createSequentialGroup()
+				.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel)
-						.addComponent(lblNewLabel_1)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(10)
-							.addComponent(articleTitleTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(10)
-							.addComponent(articleContentTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)))
-					.addContainerGap())
+					.addComponent(articleTitleTextField, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+					.addGap(20))
+				.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblNewLabel_1)
+					.addContainerGap(155, Short.MAX_VALUE))
 				.addGroup(gl_panel_1.createSequentialGroup()
-					.addGap(73)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-						.addComponent(cancelButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-						.addComponent(getButton, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-						.addComponent(postButton, GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE))
-					.addGap(75))
+						.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollPane_2))
+						.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
+							.addGap(20)
+							.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+								.addComponent(getButton, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+								.addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)))
+						.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
+							.addGap(20)
+							.addComponent(postButton, GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE))
+						.addGroup(Alignment.LEADING, gl_panel_1.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblNewLabel)
+							.addGap(8)))
+					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
@@ -234,18 +259,23 @@ public class ClientGUI {
 					.addComponent(lblNewLabel)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(articleTitleTextField, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-					.addGap(34)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel_1)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(articleContentTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(51)
+					.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+					.addGap(18)
 					.addComponent(postButton)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(getButton)
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cancelButton)
-					.addContainerGap(62, Short.MAX_VALUE))
+					.addGap(28))
 		);
+		
+		contentTextArea = new JTextArea();
+		contentTextArea.setLineWrap(true);
+		contentTextArea.setEditable(false);
+		scrollPane_2.setViewportView(contentTextArea);
 		panel_1.setLayout(gl_panel_1);
 		
 		panel_2 = new JPanel();
@@ -253,22 +283,10 @@ public class ClientGUI {
 		frmClientApplication.getContentPane().add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(null);
 		
-		textArea = new JTextArea();
-		textArea.setRows(2);
-		textArea.setToolTipText("");
-		textArea.setFont(new Font("DialogInput", Font.BOLD, 15));
-		textArea.setForeground(Color.ORANGE);
-		textArea.setBackground(Color.DARK_GRAY);
-		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
-		textArea.setEditable(false);
-		textArea.setBounds(10, 11, 493, 270);
-		panel_2.add(textArea);
-		
 		subscribeButton = new JButton("Subscribe");
 		subscribeButton.setForeground(new Color(230, 230, 250));
 		subscribeButton.setBackground(new Color(0, 0, 128));
-		subscribeButton.setBounds(10, 292, 113, 44);
+		subscribeButton.setBounds(10, 396, 113, 44);
 		panel_2.add(subscribeButton);
 		subscribeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -288,7 +306,7 @@ public class ClientGUI {
 		unsubscribeButton = new JButton("Unsubscribe");
 		unsubscribeButton.setForeground(new Color(230, 230, 250));
 		unsubscribeButton.setBackground(new Color(128, 0, 0));
-		unsubscribeButton.setBounds(133, 292, 120, 44);
+		unsubscribeButton.setBounds(133, 396, 120, 44);
 		panel_2.add(unsubscribeButton);
 		unsubscribeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -297,7 +315,7 @@ public class ClientGUI {
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-				textArea.setText("Goodbye, see you soon!");
+				textArea.setText(textArea.getText() + "### Goodbye, see you soon!\n\n");
 				subscribeButton.setEnabled(true);
 				unsubscribeButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
@@ -310,12 +328,12 @@ public class ClientGUI {
 		postArticleButton = new JButton("Create article");
 		postArticleButton.setForeground(new Color(230, 230, 250));
 		postArticleButton.setBackground(new Color(0, 128, 0));
-		postArticleButton.setBounds(263, 292, 120, 44);
+		postArticleButton.setBounds(263, 396, 120, 44);
 		panel_2.add(postArticleButton);
 		postArticleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				articleTitleTextField.setEditable(true);
-				articleContentTextField.setEditable(true);
+				contentTextArea.setEditable(true);
 				postButton.setEnabled(true);
 				cancelButton.setEnabled(true);
 				getButton.setEnabled(false);
@@ -330,7 +348,7 @@ public class ClientGUI {
 		getArticleButton = new JButton("Read article");
 		getArticleButton.setForeground(new Color(230, 230, 250));
 		getArticleButton.setBackground(new Color(0, 128, 0));
-		getArticleButton.setBounds(393, 292, 110, 44);
+		getArticleButton.setBounds(393, 396, 110, 44);
 		panel_2.add(getArticleButton);
 		getArticleButton.setFont(new Font("Segoe UI Symbol", Font.PLAIN, 14));
 		getArticleButton.addActionListener(new ActionListener() {
@@ -338,7 +356,6 @@ public class ClientGUI {
 				articleTitleTextField.setEditable(true);
 				getButton.setEnabled(true);
 				cancelButton.setEnabled(true);
-				articleContentTextField.setEditable(false);
 				postButton.setEnabled(false);
 				postArticleButton.setEnabled(false);
 				getArticleButton.setEnabled(false);
@@ -346,5 +363,36 @@ public class ClientGUI {
 			}
 		});
 		getArticleButton.setEnabled(false);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(10, 11, 493, 374);
+		panel_2.add(scrollPane);
+		
+		textArea = new JTextArea();
+		scrollPane.setViewportView(textArea);
+		textArea.setRows(2);
+		textArea.setToolTipText("");
+		textArea.setFont(new Font("DialogInput", Font.BOLD, 17));
+		textArea.setForeground(Color.ORANGE);
+		textArea.setBackground(Color.DARK_GRAY);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setEditable(false);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane_1.setBounds(513, 11, 315, 429);
+		panel_2.add(scrollPane_1);
+		
+		articleTextArea = new JTextArea();
+		articleTextArea.setLineWrap(true);
+		articleTextArea.setWrapStyleWord(true);
+		articleTextArea.setFont(new Font("Bookman Old Style", Font.PLAIN, 15));
+		articleTextArea.setEditable(false);
+		articleTextArea.setAlignmentX(TextArea.CENTER_ALIGNMENT);
+		scrollPane_1.setViewportView(articleTextArea);
 	}
 }
