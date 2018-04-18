@@ -24,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextField;
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -368,6 +369,7 @@ public class ClientGUI {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(10, 11, 493, 374);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		panel_2.add(scrollPane);
 		
 		textArea = new JTextArea();
@@ -385,6 +387,7 @@ public class ClientGUI {
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane_1.setBounds(513, 11, 315, 429);
+		scrollPane_1.setBorder(BorderFactory.createEmptyBorder());
 		panel_2.add(scrollPane_1);
 		
 		articleTextArea = new JTextArea();
